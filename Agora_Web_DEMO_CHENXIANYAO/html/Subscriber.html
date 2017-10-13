@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Subscriber Sample</title>
+<link rel="stylesheet" href="../vendor/bootstrap.min.css">
+<script src="../AgoraRTCSDK-1.13.0.js"></script>
+<script src="../vendor/jquery.js"></script>
+</head>
+
+<body>
+<div id="div_device" class="panel panel-default" style="display:none">
+<div class="select">
+<label for="audioSource">Audio source: </label><select id="audioSource"></select>
+</div>
+<div class="select">
+<label for="videoSource">Video source: </label><select id="videoSource"></select>
+</div>
+</div>
+
+<div id="div_join" class="panel panel-default">
+<div class="panel-body">
+
+Channel: <input id="channel" type="text" value="1000" size="4"></input>
+
+<button id="subscribe" class="btn btn-primary" onclick="subscribe()">Subscribe</button>
+<button id="leave" class="btn btn-primary" onclick="leave()">Leave</button>
+</div>
+</div>
+<div id="video" style="margin:0 auto;">
+    <div id="agora_local" style="float:right;width:210px;height:147px;display:inline-block;"></div>
+</div>
+
+<script language="javascript">
+var client
+var vendor_key='000617e619104371ad8ec1c945f1a2eb'
+var audioSelect = document.querySelector('select#audioSource');
+var videoSelect = document.querySelector('select#videoSource');
+var stream
+function subscribe() {
+  document.getElementById("subscribe").disabled = true;
+  document.getElementById("leave").disabled = false;
+  var channel_key = null;
+  client = AgoraRTC.createClient({mode: 'interop'});
+  
+client.init(vendor_key, function () {
+    console.log("AgoraRTC client initialized");
+	var host_id = null;
+    client.join(channel_key, channel.value, host_id, function(uid) {
+			client.on('stream-added', function (evt) {
+				stream = evt.stream;
+				console.log("New stream added: " + stream.getId());
+				console.log("Subscribe ", stream);
+				client.subscribe(stream, function (err) {
+					console.log("Subscribe stream failed", err);
+				});
+			});
+			client.on('stream-subscribed', function (evt) {
+				
+				if (stream.getId()===1){
+				console.log("Subscribe remote stream successfully: " + stream.getId());
+				if ($('div#video #agora_remote'+stream.getId()).length === 0) {
+				  $('div#video').append('<div id="agora_remote'+stream.getId()+'" style="float:left; width:810px;height:607px;display:inline-block;color:red;">HOST VIEW</div>');
+				}
+				stream.play('agora_remote' + stream.getId());
+			}});
+			
+			client.on('stream-removed', function (evt) {
+				leave();
+				console.log("Remote stream is removed " + stream.getId());
+			});
+
+      
+    }, function(err) {
+      console.log("Join channel failed", err);
+    });
+  }, function (err) {
+    console.log("AgoraRTC client init failed", err);
+  });
+  }
+
+function leave() {
+  
+  client.leave(function () {
+    console.log("Leavel channel successfully");
+	stream.stop();
+
+	document.getElementById("leave").disabled = true;
+	document.getElementById("subscribe").disabled = false;
+	$("div#agora_remote1").remove();
+	
+  }, function (err) {
+    console.log("Leave channel failed");
+  });
+  
+
+}
+function getDevices() {
+  AgoraRTC.getDevices(function (devices) {
+    for (var i = 0; i !== devices.length; ++i) {
+      var device = devices[i];
+      var option = document.createElement('option');
+      option.value = device.deviceId;
+      if (device.kind === 'audioinput') {
+        option.text = device.label || 'microphone ' + (audioSelect.length + 1);
+        audioSelect.appendChild(option);
+      } else if (device.kind === 'videoinput') {
+        option.text = device.label || 'camera ' + (videoSelect.length + 1);
+        videoSelect.appendChild(option);
+      } else {
+        console.log('Some other kind of source/device: ', device);
+      }
+    }
+  });
+}
+
+audioSelect.onchange = getDevices;
+videoSelect.onchange = getDevices;
+getDevices();
+</script>
+</body>
+</html>

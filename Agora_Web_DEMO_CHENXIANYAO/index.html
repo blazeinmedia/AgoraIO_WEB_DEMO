@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<link rel="stylesheet" href="vendor/bootstrap.min.css">
+<script src="AgoraRTCSDK-1.13.0.js"></script>
+<script src="vendor/jquery-3.2.1.min.js"></script>
+<script language="javascript"> 
+$(function(){
+	console.log("ready");
+	$("#conf_btn").mouseenter(function(){
+		$("#conf_message").removeClass("hide")
+	}).mouseleave(function(){
+		$("#conf_message").addClass("hide")
+	}).click(function(){
+		goToConfMode();
+	});
+	//$("#conf_btn").)	
+	$("#host_btn").mouseenter(function(){
+		$("#host_message").removeClass("hide")
+	}).mouseleave(function(){
+		$("#host_message").addClass("hide")
+	}).click(function(){
+		goToHostMode();
+	});
+	//$("#host_btn")
+	$("#subscriber_btn").mouseenter(function(){
+		$("#subscriber_message").removeClass("hide")
+	}).mouseleave(function(){
+		$("#subscriber_message").addClass("hide")
+	}).click(function(){
+		goToSubscriberMode();
+	});
+	//$("#subscriber_btn")
+}) 
+
+</script>  
+<style type="text/css">
+.hide {
+		display:none;
+		}
+.prompt {
+		background-color:yellow;
+		color:red;
+		}
+</style>
+</head>
+
+
+<body>
+<div style="position:fixed;left:35%;top:10%;">
+<h1 style="color:gray">Welcome using Agora !</h1><br/><br/>
+	<div style="width:300px">
+		<input id='conf_btn' style="width:300px" class="btn btn-primary" type="button" value="You are joining a Conference"  />
+		<div id="conf_message" class="prompt hide" >
+			all users interaction.
+		</div>
+	</div>
+	
+<br/>
+	<div style="width:300px">
+		<input id="host_btn" style="width:300px" class="btn btn-primary" type="button" value="You are the Host" />
+		<div id="host_message" class="prompt hide" >
+			You'll be presenting to others.
+		</div>
+	</div>
+	
+<br/>
+	<div style="width:300px">
+		<input id="subscriber_btn" style="width:300px" class="btn btn-primary" type="button" value="You are the Subscriber" />
+		<div id="subscriber_message" class="prompt hide" >
+			You'll be watching the Host.
+		</div>
+	</div>
+	
+<br/>
+<div>
+
+<script language="javascript" type="text/javascript"> 
+host_mode_url="./html/Host.html"
+subscriber_mode_url="./html/Subscriber.html"
+conf_mode_url="./html/econference.html"
+
+function goToHostMode(){
+window.location.href=host_mode_url; 
+}
+function goToSubscriberMode(){
+window.location.href=subscriber_mode_url; 
+}
+function goToConfMode(){
+window.location.href=conf_mode_url; 
+}
+
+function confModeExp(){
+	console.log("focus")
+	$("#conf").removeClass("hide")
+}
+
+
+</script>
+</body>
+</html>
